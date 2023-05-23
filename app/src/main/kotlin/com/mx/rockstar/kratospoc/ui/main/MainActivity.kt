@@ -38,6 +38,10 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     override fun onStart() {
         super.onStart()
         binding.button.setOnClickListener {
