@@ -13,10 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    `kotlin-dsl`
-}
+package com.mx.rockstar.kratospoc.core.data.di
 
-repositories {
-    mavenCentral()
+import com.mx.rockstar.kratospoc.core.data.repository.MainRepository
+import com.mx.rockstar.kratospoc.core.data.repository.MainRepositoryImpl
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal interface DataModule {
+
+  @Binds
+  fun bindsMainRepository(mainRepositoryImpl: MainRepositoryImpl): MainRepository
 }

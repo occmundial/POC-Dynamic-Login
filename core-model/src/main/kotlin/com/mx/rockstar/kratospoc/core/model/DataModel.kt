@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    `kotlin-dsl`
-}
+package com.mx.rockstar.kratospoc.core.model
 
-repositories {
-    mavenCentral()
-}
+data class DataModel(
+    var message: String? = null
+)

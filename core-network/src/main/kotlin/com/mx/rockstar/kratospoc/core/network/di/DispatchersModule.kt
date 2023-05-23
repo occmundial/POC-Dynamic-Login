@@ -13,10 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    `kotlin-dsl`
-}
+package com.mx.rockstar.kratospoc.core.network.di
 
-repositories {
-    mavenCentral()
+import com.mx.rockstar.kratospoc.core.network.AppDispatcher
+import com.mx.rockstar.kratospoc.core.network.Dispatcher
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal object DispatchersModule {
+
+    @Provides
+    @Dispatcher(AppDispatcher.IO)
+    fun providesIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 }

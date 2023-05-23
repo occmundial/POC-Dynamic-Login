@@ -13,10 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    `kotlin-dsl`
-}
+package com.mx.rockstar.kratospoc.core.network
 
-repositories {
-    mavenCentral()
+import javax.inject.Qualifier
+import kotlin.annotation.AnnotationRetention.*
+
+@Qualifier
+@Retention(RUNTIME)
+annotation class Dispatcher(val appDispatcher: AppDispatcher)
+
+enum class AppDispatcher {
+    IO
 }

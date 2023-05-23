@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-plugins {
-    `kotlin-dsl`
-}
+package com.mx.rockstar.kratospoc.core.test
 
-repositories {
-    mavenCentral()
+object MockUtil {
+
+  fun myMock() = "this is my mock"
+
+  fun myMockList() = listOf(myMock())
 }
