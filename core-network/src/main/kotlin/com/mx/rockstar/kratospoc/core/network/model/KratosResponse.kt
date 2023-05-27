@@ -13,15 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mx.rockstar.kratospoc.core.network
+package com.mx.rockstar.kratospoc.core.network.model
 
-import javax.inject.Qualifier
-import kotlin.annotation.AnnotationRetention.RUNTIME
+import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
-@Qualifier
-@Retention(RUNTIME)
-annotation class Dispatcher(val appDispatcher: AppDispatcher)
-
-enum class AppDispatcher {
-  IO,
-}
+@JsonClass(generateAdapter = true)
+data class KratosResponse(
+  @field:Json(name = "id") val id: String,
+  @field:Json(name = "expires_at") val expiresAt: String,
+  @field:Json(name = "issued_at") val issuedAt: String,
+  @field:Json(name = "request_url") val requestUrl: String,
+  @field:Json(name = "refresh") val refresh: Boolean = false,
+  @field:Json(name = "ui") val ui: UserInterface,
+)

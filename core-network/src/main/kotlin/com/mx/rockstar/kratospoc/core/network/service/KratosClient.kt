@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mx.rockstar.kratospoc.core.network
+package com.mx.rockstar.kratospoc.core.network.service
 
-import javax.inject.Qualifier
-import kotlin.annotation.AnnotationRetention.RUNTIME
+import com.mx.rockstar.kratospoc.core.network.model.KratosResponse
+import com.skydoves.sandwich.ApiResponse
+import javax.inject.Inject
 
-@Qualifier
-@Retention(RUNTIME)
-annotation class Dispatcher(val appDispatcher: AppDispatcher)
+class KratosClient @Inject constructor(
+  private val client: KratosService,
+) {
 
-enum class AppDispatcher {
-  IO,
+  suspend fun getLoginForm(): ApiResponse<KratosResponse> = client.getLoginForm()
+
+  suspend fun getRegistrationForm(): ApiResponse<KratosResponse> = client.getRegistrationForm()
 }

@@ -59,6 +59,7 @@ androidx-corektx = { module = "androidx.core:core-ktx", version.ref = "androidxC
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidxAppcompat" }
 androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "androidxFragment" }
 androidx-lifecycle = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidxLifecycle" }
+androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidxLifecycle" }
 androidx-startup = { module = "androidx.startup:startup-runtime", version.ref = "androidXStartup" }
 androidx-arch-core = { module = "androidx.arch.core:core-testing", version.ref = "androidxArchCore" }
 

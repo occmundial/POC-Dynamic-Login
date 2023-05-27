@@ -33,6 +33,7 @@ android {
 
 dependencies {
     // modules
+    implementation(project(":core-model"))
 
     // unit test
     implementation(libs.coroutines)

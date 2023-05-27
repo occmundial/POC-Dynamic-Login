@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mx.rockstar.kratospoc.core.data.repository
+package com.mx.rockstar.kratospoc.core.network.interceptor
 
-import androidx.annotation.WorkerThread
-import kotlinx.coroutines.flow.Flow
+import okhttp3.Interceptor
+import okhttp3.Response
+import timber.log.Timber
 
-interface MainRepository {
+internal class HttpRequestInterceptor : Interceptor {
 
-  @WorkerThread
-  fun fetchData(
-    page: Int,
-    onStart: () -> Unit,
-    onComplete: () -> Unit,
-    onError: (String?) -> Unit,
-  ): Flow<String>
+  override fun intercept(chain: Interceptor.Chain): Response {
+    val originalRequest = chain.request()
+    val requestBuilder = originalRequest.newBuilder().url(originalRequest.url).build()
+    Timber.d("Request: $requestBuilder")
+    return chain.proceed(requestBuilder)
+  }
 }

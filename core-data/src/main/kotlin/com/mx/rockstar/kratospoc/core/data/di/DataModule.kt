@@ -15,8 +15,8 @@
  */
 package com.mx.rockstar.kratospoc.core.data.di
 
-import com.mx.rockstar.kratospoc.core.data.repository.MainRepository
-import com.mx.rockstar.kratospoc.core.data.repository.MainRepositoryImpl
+import com.mx.rockstar.kratospoc.core.data.kratos.KratosRepository
+import com.mx.rockstar.kratospoc.core.data.kratos.Repository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -24,8 +24,9 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-internal interface DataModule {
+internal fun interface DataModule {
 
-  @Binds
-  fun bindsMainRepository(mainRepositoryImpl: MainRepositoryImpl): MainRepository
+    @Binds
+    fun bindKratosRepository(impl: KratosRepository): Repository
+
 }

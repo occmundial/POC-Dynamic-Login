@@ -15,21 +15,23 @@
  */
 package com.mx.rockstar.kratospoc.ui.main
 
+import androidx.annotation.MainThread
 import androidx.databinding.Bindable
-import androidx.lifecycle.viewModelScope
-import com.mx.rockstar.kratospoc.core.data.repository.MainRepository
+import com.mx.rockstar.kratospoc.core.data.kratos.Repository
+import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.skydoves.bindables.BindingViewModel
-import com.skydoves.bindables.asBindingProperty
 import com.skydoves.bindables.bindingProperty
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val mainRepository: MainRepository
+    private val repository: Repository
 ) : BindingViewModel() {
 
     @get:Bindable
@@ -38,30 +40,45 @@ class MainViewModel @Inject constructor(
 
     @get:Bindable
     var message: String? by bindingProperty(null)
-        private set
+        set
 
-    private val fetchingIndex: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val listFlow = fetchingIndex.flatMapLatest { page ->
-        mainRepository.fetchData(
-            page = page,
-            onStart = { isLoading = true },
-            onComplete = { isLoading = false },
-            onError = { message = it }
-        )
+    private val fetchingIndex: MutableStateFlow<MainState> = MutableStateFlow(MainState.StandBy)
+
+    val listFlow: Flow<UserInterface> = fetchingIndex.flatMapLatest { state ->
+        when (state) {
+            MainState.Idle -> {
+                Timber.d("fetchingIndex: Idle")
+                repository.fetchLoginForm(
+                    onStart = { isLoading = true },
+                    onComplete = {
+                        isLoading = false
+                        fetchingIndex.value = MainState.StandBy
+                    },
+                    onError = { message = it }
+                )
+            }
+
+            MainState.StandBy -> {
+                Timber.d("fetchingIndex: StandBy")
+                flow { }
+            }
+        }
     }
-
-    @get:Bindable
-    val response: String by listFlow.asBindingProperty(viewModelScope, "")
 
     init {
         Timber.d("init MainViewModel")
     }
 
-    fun updateMessage() {
+    @MainThread
+    fun fetchLoginForm() {
         if (!isLoading) {
-            message = ""
-            fetchingIndex.value++
+            fetchingIndex.value = MainState.Idle
         }
     }
 
+}
+
+sealed class MainState {
+    object Idle : MainState()
+    object StandBy : MainState()
 }

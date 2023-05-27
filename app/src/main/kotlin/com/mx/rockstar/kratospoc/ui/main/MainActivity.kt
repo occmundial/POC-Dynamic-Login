@@ -16,13 +16,24 @@
 package com.mx.rockstar.kratospoc.ui.main
 
 import android.os.Bundle
+import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.VisibleForTesting
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatTextView
+import androidx.lifecycle.lifecycleScope
 import com.mx.rockstar.kratospoc.R
+import com.mx.rockstar.kratospoc.core.model.kratos.Node
+import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.mx.rockstar.kratospoc.databinding.LayoutMainBinding
 import com.skydoves.bindables.BindingActivity
 import com.skydoves.transformationlayout.onTransformationStartContainer
+import com.skydoves.whatif.whatIfNotNull
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
@@ -36,16 +47,79 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
         binding {
             vm = viewModel
         }
+
+        lifecycleScope.launch {
+            viewModel.listFlow.collect { userInterface ->
+                userInterface.nodes.forEach { node ->
+                    checkNode(node, userInterface)
+                }
+            }
+        }
     }
 
-    override fun onResume() {
-        super.onResume()
+    private fun checkNode(node: Node, userInterface: UserInterface) {
+        node.attributes.whatIfNotNull { attributes ->
+            when (FormViewType.valueOf(attributes.type.uppercase())) {
+                FormViewType.HIDDEN -> {
+                    val view = AppCompatTextView(binding.root.context)
+                    view.text = attributes.value
+                    view.visibility = View.GONE
+                    binding.container.addView(view)
+                }
+                FormViewType.PASSWORD,
+                FormViewType.TEXT -> {
+                    val view = AppCompatEditText(binding.root.context)
+                    view.hint = attributes.name
+                    view.setText(attributes.value)
+                    view.isEnabled = !attributes.disabled
+                    binding.container.addView(view)
+                }
+
+                FormViewType.SUBMIT -> {
+                    val view = AppCompatButton(binding.root.context)
+                    view.text = attributes.name
+                    view.isEnabled = !attributes.disabled
+                    view.setOnClickListener { onClickForm(userInterface) }
+                    binding.container.addView(view)
+                }
+            }
+        }
+    }
+
+    private fun onClickForm(userInterface: UserInterface) {
+        val (identifier: String, password: String) = getFormData()
+        if (validateForm(identifier, password)) return
+        userInterface.nodes.forEach { node ->
+            node.attributes.whatIfNotNull { attributes ->
+                when (FormViewType.valueOf(attributes.type.uppercase())) {
+                    FormViewType.HIDDEN -> {}
+                    FormViewType.TEXT -> attributes.value = identifier
+                    FormViewType.PASSWORD -> attributes.value = password
+                    FormViewType.SUBMIT -> {}
+                }
+            }
+        }
+        Timber.d("userInterface: action -> $userInterface")
+    }
+
+    private fun validateForm(identifier: String, password: String): Boolean {
+        if (identifier.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this@MainActivity, "please fill the form", Toast.LENGTH_SHORT).show()
+            return true
+        }
+        return false
+    }
+
+    private fun getFormData(): Pair<String, String> {
+        val identifierEt = binding.container.getChildAt(1) as AppCompatEditText
+        val passwordEt = binding.container.getChildAt(2) as AppCompatEditText
+        val identifier: String = identifierEt.text.toString()
+        val password: String = passwordEt.text.toString()
+        return Pair(identifier, password)
     }
 
     override fun onStart() {
         super.onStart()
-        binding.button.setOnClickListener {
-            viewModel.updateMessage()
-        }
+        viewModel.fetchLoginForm()
     }
 }

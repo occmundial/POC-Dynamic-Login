@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 pluginManagement {
     repositories {
         google()
@@ -17,10 +18,10 @@ dependencyResolutionManagement {
         maven(url = "https://oss.sonatype.org/content/repositories/snapshots/")
     }
 }
-rootProject.name = "Kratos POC"
+rootProject.name = "KratosPOC"
 include(":app")
-include(":core-network")
-include(":core-data")
-include(":core-database")
 include(":core-model")
+include(":core-network")
+include(":core-database")
+include(":core-data")
 include(":core-test")
