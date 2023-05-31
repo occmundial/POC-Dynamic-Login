@@ -18,6 +18,7 @@ package com.mx.rockstar.kratospoc.ui.main
 import androidx.annotation.MainThread
 import androidx.databinding.Bindable
 import com.mx.rockstar.kratospoc.core.data.kratos.Repository
+import com.mx.rockstar.kratospoc.core.model.kratos.Node
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.skydoves.bindables.BindingViewModel
 import com.skydoves.bindables.bindingProperty
@@ -40,7 +41,6 @@ class MainViewModel @Inject constructor(
 
     @get:Bindable
     var message: String? by bindingProperty(null)
-        set
 
     private val fetchingIndex: MutableStateFlow<MainState> = MutableStateFlow(MainState.StandBy)
 
@@ -65,6 +65,32 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    private val postForm: MutableStateFlow<MainAction> = MutableStateFlow(MainAction.Reset)
+
+    val postFlow: Flow<String> = postForm.flatMapLatest { action ->
+        when (action) {
+            is MainAction.Submit -> {
+                Timber.d("postForm: Submit")
+                repository.postForm(
+                    action.action,
+                    action.method,
+                    action.nodes,
+                    onStart = { isLoading = true },
+                    onComplete = {
+                        isLoading = false
+                        postForm.value = MainAction.Reset
+                    },
+                    onError = { message = it }
+                )
+            }
+
+            MainAction.Reset -> {
+                Timber.d("postForm: Reset")
+                flow { }
+            }
+        }
+    }
+
     init {
         Timber.d("init MainViewModel")
     }
@@ -76,9 +102,23 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun postForm(userInterface: UserInterface) {
+        val action = userInterface.action
+        val method = userInterface.method
+        val nodes = userInterface.nodes
+        postForm.value = MainAction.Submit(action, method, nodes)
+    }
+
 }
 
 sealed class MainState {
     object Idle : MainState()
     object StandBy : MainState()
+}
+
+sealed class MainAction {
+
+    data class Submit(val action: String, val method: String, val nodes: List<Node>) : MainAction()
+    object Reset : MainAction()
+
 }

@@ -66,6 +66,7 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
                     view.visibility = View.GONE
                     binding.container.addView(view)
                 }
+
                 FormViewType.PASSWORD,
                 FormViewType.TEXT -> {
                     val view = AppCompatEditText(binding.root.context)
@@ -99,6 +100,7 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
                 }
             }
         }
+        viewModel.postForm(userInterface)
         Timber.d("userInterface: action -> $userInterface")
     }
 

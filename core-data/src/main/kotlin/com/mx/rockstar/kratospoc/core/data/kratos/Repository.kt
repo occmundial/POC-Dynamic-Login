@@ -1,6 +1,7 @@
 package com.mx.rockstar.kratospoc.core.data.kratos
 
 import androidx.annotation.WorkerThread
+import com.mx.rockstar.kratospoc.core.model.kratos.Node
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import kotlinx.coroutines.flow.Flow
 
@@ -29,5 +30,15 @@ interface Repository {
         onComplete: () -> Unit,
         onError: (String?) -> Unit,
     ): Flow<UserInterface>
+
+    @WorkerThread
+    fun postForm(
+        action: String,
+        method: String,
+        nodes: List<Node>,
+        onStart: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ): Flow<String>
 
 }

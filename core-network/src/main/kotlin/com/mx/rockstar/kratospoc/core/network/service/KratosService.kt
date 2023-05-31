@@ -21,9 +21,12 @@ import retrofit2.http.GET
 
 interface KratosService {
 
-  @GET("kratos/self-service/login/api")
-  suspend fun getLoginForm(): ApiResponse<KratosResponse>
+    @GET("kratos/self-service/login/api")
+    suspend fun getLoginForm(): ApiResponse<KratosResponse>
 
-  @GET("kratos/self-service/registration/api")
-  suspend fun getRegistrationForm(): ApiResponse<KratosResponse>
+    @GET("kratos/self-service/registration/api")
+    suspend fun getRegistrationForm(): ApiResponse<KratosResponse>
+
+    suspend fun postForm(action: String, method: String, nodes: String): ApiResponse<String>
+
 }

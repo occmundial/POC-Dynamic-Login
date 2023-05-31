@@ -1,6 +1,7 @@
 package com.mx.rockstar.kratospoc.core.data.kratos
 
 import androidx.annotation.VisibleForTesting
+import com.mx.rockstar.kratospoc.core.model.kratos.Node
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.mx.rockstar.kratospoc.core.network.AppDispatcher
 import com.mx.rockstar.kratospoc.core.network.Dispatcher
@@ -45,6 +46,22 @@ class KratosRepository @Inject constructor(
         response.suspendOnSuccess {
             val userInterface = data.ui
             emit(userInterface)
+        }.onFailure {
+            onError(message())
+        }
+    }.onStart { onStart() }.onCompletion { onComplete() }.flowOn(ioDispatcher)
+
+    override fun postForm(
+        action: String,
+        method: String,
+        nodes: List<Node>,
+        onStart: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ): Flow<String> = flow {
+        val response = kratosClient.postForm(action, method, nodes.toString())
+        response.suspendOnSuccess {
+            emit(data)
         }.onFailure {
             onError(message())
         }

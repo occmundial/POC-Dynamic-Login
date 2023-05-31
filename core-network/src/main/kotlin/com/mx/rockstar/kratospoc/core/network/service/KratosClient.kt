@@ -20,10 +20,14 @@ import com.skydoves.sandwich.ApiResponse
 import javax.inject.Inject
 
 class KratosClient @Inject constructor(
-  private val client: KratosService,
+    private val client: KratosService,
 ) {
 
-  suspend fun getLoginForm(): ApiResponse<KratosResponse> = client.getLoginForm()
+    suspend fun getLoginForm(): ApiResponse<KratosResponse> = client.getLoginForm()
 
-  suspend fun getRegistrationForm(): ApiResponse<KratosResponse> = client.getRegistrationForm()
+    suspend fun getRegistrationForm(): ApiResponse<KratosResponse> = client.getRegistrationForm()
+
+    suspend fun postForm(action: String, method: String, nodes: String) =
+        client.postForm(action, method, nodes)
+
 }
