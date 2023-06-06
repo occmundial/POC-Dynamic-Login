@@ -70,4 +70,42 @@ class KratosRepository @Inject constructor(
         }
     }.onStart { onStart() }.onCompletion { onComplete() }.flowOn(ioDispatcher)
 
+    override fun postForm(
+        action: String,
+        token: String,
+        identifier: String,
+        password: String,
+        onStart: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ): Flow<String> = flow {
+        Timber.d("action: $action token: $token identifier: $identifier password: $password")
+        val response = kratosClient.postForm(action, token, identifier, password)
+        response.suspendOnSuccess {
+            emit(data)
+        }.onFailure {
+            Timber.d("onFailure: ${message()}")
+            onError(message())
+        }
+    }.onStart { onStart() }.onCompletion { onComplete() }.flowOn(ioDispatcher)
+
+    override fun postFormEncoded(
+        action: String,
+        token: String,
+        identifier: String,
+        password: String,
+        onStart: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ): Flow<String> = flow {
+        Timber.d("action: $action token: $token identifier: $identifier password: $password")
+        val response = kratosClient.postFormEncoded(action, token, identifier, password)
+        response.suspendOnSuccess {
+            emit(data)
+        }.onFailure {
+            Timber.d("onFailure: ${message()}")
+            onError(message())
+        }
+    }.onStart { onStart() }.onCompletion { onComplete() }.flowOn(ioDispatcher)
+
 }

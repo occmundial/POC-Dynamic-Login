@@ -19,6 +19,7 @@ import android.net.Uri
 import androidx.annotation.MainThread
 import androidx.databinding.Bindable
 import com.mx.rockstar.kratospoc.core.data.kratos.Repository
+import com.mx.rockstar.kratospoc.core.model.kratos.Form
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.skydoves.bindables.BindingViewModel
 import com.skydoves.bindables.bindingProperty
@@ -30,6 +31,9 @@ import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * MainViewModel is a bridge between [MainActivity] and [Repository].
+ */
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: Repository
@@ -86,6 +90,38 @@ class MainViewModel @Inject constructor(
                 Timber.d("settingForm: StandBy")
                 flow { }
             }
+
+            is MainAction.SubmitForm -> {
+                Timber.d("settingForm: SubmitForm ${action.form}")
+                repository.postForm(
+                    action = getFlowId(action.form.action),
+                    token = action.form.token,
+                    identifier = action.form.identifier,
+                    password = action.form.password,
+                    onStart = { isLoading = true },
+                    onComplete = {
+                        isLoading = false
+                        settingForm.value = MainAction.StandBy
+                    },
+                    onError = { message = it }
+                )
+            }
+
+            is MainAction.SubmitFormEncoded -> {
+                Timber.d("settingForm: SubmitFormEncoded ${action.form}")
+                repository.postFormEncoded(
+                    action = getFlowId(action.form.action),
+                    token = action.form.token,
+                    identifier = action.form.identifier,
+                    password = action.form.password,
+                    onStart = { isLoading = true },
+                    onComplete = {
+                        isLoading = false
+                        settingForm.value = MainAction.StandBy
+                    },
+                    onError = { message = it }
+                )
+            }
         }
     }
 
@@ -114,6 +150,22 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    @MainThread
+    fun postForm(form: Form) {
+        if (!isLoading) {
+            message = null
+            settingForm.value = MainAction.SubmitForm(form)
+        }
+    }
+
+    @MainThread
+    fun postFormEncoded(form: Form) {
+        if (!isLoading) {
+            message = null
+            settingForm.value = MainAction.SubmitFormEncoded(form)
+        }
+    }
+
 }
 
 sealed class MainState {
@@ -123,5 +175,7 @@ sealed class MainState {
 
 sealed class MainAction {
     data class Submit(val userInterface: UserInterface) : MainAction()
+    data class SubmitForm(val form: Form) : MainAction()
+    data class SubmitFormEncoded(val form: Form) : MainAction()
     object StandBy : MainAction()
 }

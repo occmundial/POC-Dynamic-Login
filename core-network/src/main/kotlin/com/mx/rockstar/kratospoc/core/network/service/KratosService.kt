@@ -19,10 +19,13 @@ import com.mx.rockstar.kratospoc.core.model.kratos.Node
 import com.mx.rockstar.kratospoc.core.network.model.KratosResponse
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Query
-import retrofit2.http.Url
 
 interface KratosService {
 
@@ -33,6 +36,27 @@ interface KratosService {
     suspend fun getRegistrationForm(): ApiResponse<KratosResponse>
 
     @POST("kratos/self-service/login")
-    suspend fun postForm(@Query("flow") action: String, @Body nodes: List<Node>): ApiResponse<String>
+    suspend fun postForm(
+        @Query("flow") action: String,
+        @Body nodes: List<Node>
+    ): ApiResponse<String>
+
+    @Multipart
+    @POST("kratos/self-service/login")
+    suspend fun postForm(
+        @Query("flow") action: String,
+        @Part("csrf_token") token: String,
+        @Part("identifier") identifier: String,
+        @Part("password") password: String
+    ): ApiResponse<String>
+
+    @FormUrlEncoded
+    @POST("kratos/self-service/login")
+    suspend fun postFormEncoded(
+        @Query("flow") action: String,
+        @Field("csrf_token") token: String,
+        @Field("identifier") identifier: String,
+        @Field("password") password: String
+    ): ApiResponse<String>
 
 }

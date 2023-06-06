@@ -18,7 +18,6 @@ package com.mx.rockstar.kratospoc.ui.main
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.widget.AppCompatButton
@@ -26,6 +25,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.lifecycle.lifecycleScope
 import com.mx.rockstar.kratospoc.R
+import com.mx.rockstar.kratospoc.core.model.kratos.Form
 import com.mx.rockstar.kratospoc.core.model.kratos.Node
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.mx.rockstar.kratospoc.databinding.LayoutMainBinding
@@ -100,6 +100,16 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
                     view.text = attributes.name
                     view.isEnabled = !attributes.disabled
                     view.setOnClickListener { onClickForm(userInterface) }
+
+                    binding.fabFormMultipart.isEnabled = true
+                    binding.fabFormMultipart.setOnClickListener {
+                        onClickFormMultipart(userInterface)
+                    }
+                    binding.fabFormEncoded.isEnabled = true
+                    binding.fabFormEncoded.setOnClickListener {
+                        onClickFormEncoded(userInterface)
+                    }
+
                     binding.container.addView(view)
                 }
             }
@@ -131,9 +141,36 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
         viewModel.postForm(userInterface)
     }
 
+    private fun onClickFormMultipart(userInterface: UserInterface) {
+        hideKeyboard()
+        val (identifier: String, password: String) = getFormData()
+        if (validateForm(identifier, password)) return
+        val form = Form(
+            action = userInterface.action,
+            token = "",
+            identifier = identifier,
+            password = password
+        )
+        viewModel.postForm(form)
+    }
+
+    private fun onClickFormEncoded(userInterface: UserInterface) {
+        hideKeyboard()
+        val (identifier: String, password: String) = getFormData()
+        if (validateForm(identifier, password)) return
+        val form = Form(
+            action = userInterface.action,
+            token = "",
+            identifier = identifier,
+            password = password
+        )
+        viewModel.postFormEncoded(form)
+    }
+
     private fun validateForm(identifier: String, password: String): Boolean {
         if (identifier.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this@MainActivity, "please fill the form", Toast.LENGTH_SHORT).show()
+            viewModel.message = null
+            viewModel.message = "please fill the form"
             return true
         }
         return false

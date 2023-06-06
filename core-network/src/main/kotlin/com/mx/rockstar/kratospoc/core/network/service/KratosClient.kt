@@ -31,4 +31,18 @@ class KratosClient @Inject constructor(
     suspend fun postForm(action: String, method: String, nodes: List<Node>) =
         client.postForm(action, nodes)
 
+    suspend fun postForm(
+        action: String,
+        token: String,
+        identifier: String,
+        password: String
+    ) = client.postForm(action, token, identifier, password)
+
+    suspend fun postFormEncoded(
+        action: String,
+        token: String,
+        identifier: String,
+        password: String
+    ) = client.postFormEncoded(action, token, identifier, password)
+
 }

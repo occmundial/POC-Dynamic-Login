@@ -41,4 +41,26 @@ interface Repository {
         onError: (String?) -> Unit
     ): Flow<String>
 
+    @WorkerThread
+    fun postForm(
+        action: String,
+        token: String,
+        identifier: String,
+        password: String,
+        onStart: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ): Flow<String>
+
+    @WorkerThread
+    fun postFormEncoded(
+        action: String,
+        token: String,
+        identifier: String,
+        password: String,
+        onStart: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ): Flow<String>
+
 }
