@@ -15,6 +15,7 @@
  */
 package com.mx.rockstar.kratospoc.core.network.service
 
+import com.mx.rockstar.kratospoc.core.model.kratos.Node
 import com.mx.rockstar.kratospoc.core.network.model.KratosResponse
 import com.skydoves.sandwich.ApiResponse
 import javax.inject.Inject
@@ -27,7 +28,7 @@ class KratosClient @Inject constructor(
 
     suspend fun getRegistrationForm(): ApiResponse<KratosResponse> = client.getRegistrationForm()
 
-    suspend fun postForm(action: String, method: String, nodes: String) =
-        client.postForm(action, method, nodes)
+    suspend fun postForm(action: String, method: String, nodes: List<Node>) =
+        client.postForm(action, nodes)
 
 }

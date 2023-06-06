@@ -15,10 +15,10 @@
  */
 package com.mx.rockstar.kratospoc.ui.main
 
+import android.net.Uri
 import androidx.annotation.MainThread
 import androidx.databinding.Bindable
 import com.mx.rockstar.kratospoc.core.data.kratos.Repository
-import com.mx.rockstar.kratospoc.core.model.kratos.Node
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.skydoves.bindables.BindingViewModel
 import com.skydoves.bindables.bindingProperty
@@ -42,83 +42,86 @@ class MainViewModel @Inject constructor(
     @get:Bindable
     var message: String? by bindingProperty(null)
 
-    private val fetchingIndex: MutableStateFlow<MainState> = MutableStateFlow(MainState.StandBy)
-
-    val listFlow: Flow<UserInterface> = fetchingIndex.flatMapLatest { state ->
+    private val fetchingForm: MutableStateFlow<MainState> = MutableStateFlow(MainState.StandBy)
+    val listFlow: Flow<UserInterface> = fetchingForm.flatMapLatest { state ->
         when (state) {
-            MainState.Idle -> {
-                Timber.d("fetchingIndex: Idle")
+            is MainState.Fetch -> {
+                Timber.d("fetchingForm: Fetch ${state.status}")
                 repository.fetchLoginForm(
                     onStart = { isLoading = true },
                     onComplete = {
                         isLoading = false
-                        fetchingIndex.value = MainState.StandBy
+                        fetchingForm.value = MainState.StandBy
                     },
                     onError = { message = it }
                 )
             }
 
             MainState.StandBy -> {
-                Timber.d("fetchingIndex: StandBy")
+                Timber.d("fetchingForm: StandBy")
                 flow { }
             }
         }
     }
 
-    private val postForm: MutableStateFlow<MainAction> = MutableStateFlow(MainAction.Reset)
-
-    val postFlow: Flow<String> = postForm.flatMapLatest { action ->
+    private val settingForm: MutableStateFlow<MainAction> = MutableStateFlow(MainAction.StandBy)
+    val formFlow: Flow<String> = settingForm.flatMapLatest { action ->
         when (action) {
             is MainAction.Submit -> {
-                Timber.d("postForm: Submit")
+                Timber.d("settingForm: Submit ${action.userInterface}")
                 repository.postForm(
-                    action.action,
-                    action.method,
-                    action.nodes,
+                    action = getFlowId(action.userInterface.action),
+                    method = action.userInterface.method,
+                    nodes = action.userInterface.nodes,
                     onStart = { isLoading = true },
                     onComplete = {
                         isLoading = false
-                        postForm.value = MainAction.Reset
+                        settingForm.value = MainAction.StandBy
                     },
                     onError = { message = it }
                 )
             }
 
-            MainAction.Reset -> {
-                Timber.d("postForm: Reset")
+            MainAction.StandBy -> {
+                Timber.d("settingForm: StandBy")
                 flow { }
             }
         }
     }
 
-    init {
-        Timber.d("init MainViewModel")
-    }
+    private fun getFlowId(action: String): String =
+        Uri.parse(action).getQueryParameter("flow").toString()
 
+
+    /**
+     * fetchLoginForm is an action for fetching the login form.
+     */
     @MainThread
-    fun fetchLoginForm() {
+    fun fetchLoginForm(status: String) {
         if (!isLoading) {
-            fetchingIndex.value = MainState.Idle
+            fetchingForm.value = MainState.Fetch(status)
         }
     }
 
+    /**
+     * postForm is an action for posting the form.
+     */
+    @MainThread
     fun postForm(userInterface: UserInterface) {
-        val action = userInterface.action
-        val method = userInterface.method
-        val nodes = userInterface.nodes
-        postForm.value = MainAction.Submit(action, method, nodes)
+        if (!isLoading) {
+            message = null
+            settingForm.value = MainAction.Submit(userInterface)
+        }
     }
 
 }
 
 sealed class MainState {
-    object Idle : MainState()
+    data class Fetch(val status: String) : MainState()
     object StandBy : MainState()
 }
 
 sealed class MainAction {
-
-    data class Submit(val action: String, val method: String, val nodes: List<Node>) : MainAction()
-    object Reset : MainAction()
-
+    data class Submit(val userInterface: UserInterface) : MainAction()
+    object StandBy : MainAction()
 }

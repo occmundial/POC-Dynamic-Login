@@ -15,9 +15,14 @@
  */
 package com.mx.rockstar.kratospoc.core.network.service
 
+import com.mx.rockstar.kratospoc.core.model.kratos.Node
 import com.mx.rockstar.kratospoc.core.network.model.KratosResponse
 import com.skydoves.sandwich.ApiResponse
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Query
+import retrofit2.http.Url
 
 interface KratosService {
 
@@ -27,6 +32,7 @@ interface KratosService {
     @GET("kratos/self-service/registration/api")
     suspend fun getRegistrationForm(): ApiResponse<KratosResponse>
 
-    suspend fun postForm(action: String, method: String, nodes: String): ApiResponse<String>
+    @POST("kratos/self-service/login")
+    suspend fun postForm(@Query("flow") action: String, @Body nodes: List<Node>): ApiResponse<String>
 
 }

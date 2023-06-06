@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
+import timber.log.Timber
 import javax.inject.Inject
 
 @VisibleForTesting
@@ -59,10 +60,12 @@ class KratosRepository @Inject constructor(
         onComplete: () -> Unit,
         onError: (String?) -> Unit
     ): Flow<String> = flow {
-        val response = kratosClient.postForm(action, method, nodes.toString())
+        Timber.d("action: $action method: $method nodes: $nodes")
+        val response = kratosClient.postForm(action, method, nodes)
         response.suspendOnSuccess {
             emit(data)
         }.onFailure {
+            Timber.d("onFailure: ${message()}")
             onError(message())
         }
     }.onStart { onStart() }.onCompletion { onComplete() }.flowOn(ioDispatcher)

@@ -26,13 +26,7 @@ data class Node(
     @field:Json(name = "meta") val meta: Meta? = null
 ) {
     override fun toString(): String {
-        val json = JSONObject().apply {
-            put("type", type)
-            put("group", group)
-            put("attributes", JSONObject(attributes.toString()))
-            put("meta", JSONObject(meta.toString()))
-        }
-        return json.toString(2)
+        return Moshi.Builder().build().adapter(Node::class.java).toJson(this)
     }
 }
 
@@ -47,16 +41,7 @@ data class Attributes(
     @field:Json(name = "node_type") val nodeType: String
 ) {
     override fun toString(): String {
-        val json = JSONObject().apply {
-            put("name", name)
-            put("type", type)
-            put("value", value)
-            put("required", required)
-            put("autocomplete", autocomplete)
-            put("disabled", disabled)
-            put("node_type", nodeType)
-        }
-        return json.toString(2)
+        return Moshi.Builder().build().adapter(Attributes::class.java).toJson(this)
     }
 }
 
@@ -65,10 +50,7 @@ data class Meta(
     @field:Json(name = "label") val label: Label? = null
 ) {
     override fun toString(): String {
-        val json = JSONObject().apply {
-            put("label", JSONObject(label.toString()))
-        }
-        return json.toString(2)
+        return Moshi.Builder().build().adapter(Meta::class.java).toJson(this)
     }
 }
 
@@ -79,11 +61,6 @@ data class Label(
     @field:Json(name = "type") val type: String,
 ) {
     override fun toString(): String {
-        val json = JSONObject().apply {
-            put("id", id)
-            put("text", text)
-            put("type", type)
-        }
-        return json.toString(2)
+        return Moshi.Builder().build().adapter(Label::class.java).toJson(this)
     }
 }

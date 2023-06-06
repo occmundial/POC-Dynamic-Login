@@ -17,6 +17,7 @@ package com.mx.rockstar.kratospoc.ui.main
 
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.VisibleForTesting
@@ -55,6 +56,24 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
                 }
             }
         }
+        lifecycleScope.launch {
+            viewModel.formFlow.collect {
+                binding.response.text = it
+            }
+        }
+        binding.fab.setOnClickListener {
+            fetchLoginForm("update form")
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        fetchLoginForm("load form")
+    }
+
+    private fun fetchLoginForm(status: String) {
+        binding.container.removeAllViews()
+        viewModel.fetchLoginForm(status)
     }
 
     private fun checkNode(node: Node, userInterface: UserInterface) {
@@ -87,21 +106,29 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
         }
     }
 
+    // hide keyboard function
+    private fun hideKeyboard() {
+        binding.response.text = ""
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
+    }
+
     private fun onClickForm(userInterface: UserInterface) {
+        hideKeyboard()
         val (identifier: String, password: String) = getFormData()
         if (validateForm(identifier, password)) return
         userInterface.nodes.forEach { node ->
             node.attributes.whatIfNotNull { attributes ->
                 when (FormViewType.valueOf(attributes.type.uppercase())) {
-                    FormViewType.HIDDEN -> {}
+                    FormViewType.HIDDEN -> Unit
                     FormViewType.TEXT -> attributes.value = identifier
                     FormViewType.PASSWORD -> attributes.value = password
-                    FormViewType.SUBMIT -> {}
+                    FormViewType.SUBMIT -> Unit
                 }
             }
         }
+        Timber.d("userInterface: $userInterface")
         viewModel.postForm(userInterface)
-        Timber.d("userInterface: action -> $userInterface")
     }
 
     private fun validateForm(identifier: String, password: String): Boolean {
@@ -118,10 +145,5 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
         val identifier: String = identifierEt.text.toString()
         val password: String = passwordEt.text.toString()
         return Pair(identifier, password)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.fetchLoginForm()
     }
 }
