@@ -129,3 +129,7 @@ sealed class MainSubmit {
     data class Submit(val action: String, val form: Form) : MainSubmit()
     object StandBy : MainSubmit()
 }
+
+enum class FormViewType {
+    HIDDEN, TEXT, PASSWORD, SUBMIT
+}

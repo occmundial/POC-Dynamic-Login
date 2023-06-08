@@ -30,6 +30,11 @@ import com.mx.rockstar.kratospoc.core.model.kratos.Form
 import com.mx.rockstar.kratospoc.core.model.kratos.Node
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.mx.rockstar.kratospoc.databinding.LayoutMainBinding
+import com.mx.rockstar.kratospoc.ui.main.FormViewType.HIDDEN
+import com.mx.rockstar.kratospoc.ui.main.FormViewType.PASSWORD
+import com.mx.rockstar.kratospoc.ui.main.FormViewType.SUBMIT
+import com.mx.rockstar.kratospoc.ui.main.FormViewType.TEXT
+import com.mx.rockstar.kratospoc.ui.main.FormViewType.valueOf
 import com.skydoves.bindables.BindingActivity
 import com.skydoves.transformationlayout.onTransformationStartContainer
 import com.skydoves.whatif.whatIfNotNull
@@ -79,22 +84,23 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
 
     private fun checkNode(node: Node, userInterface: UserInterface) {
         node.attributes.whatIfNotNull { attributes ->
-            when (FormViewType.valueOf(attributes.type.uppercase())) {
-                FormViewType.HIDDEN -> {
+            when (valueOf(attributes.type.uppercase())) {
+                HIDDEN -> {
                     val view = AppCompatTextView(binding.root.context)
                     view.text = attributes.value
                     view.visibility = View.GONE
                     binding.container.addView(view)
                 }
 
-                FormViewType.TEXT -> {
+                TEXT -> {
                     val view = AppCompatEditText(binding.root.context)
                     view.hint = attributes.name
                     view.setText("nueva@getnada.com")
                     view.isEnabled = !attributes.disabled
                     binding.container.addView(view)
                 }
-                FormViewType.PASSWORD -> {
+
+                PASSWORD -> {
                     val view = AppCompatEditText(binding.root.context)
                     view.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
                     view.hint = attributes.name
@@ -103,7 +109,7 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
                     binding.container.addView(view)
                 }
 
-                FormViewType.SUBMIT -> {
+                SUBMIT -> {
                     val view = AppCompatButton(binding.root.context)
                     view.text = attributes.name
                     view.isEnabled = !attributes.disabled
@@ -127,11 +133,11 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
         if (validateForm(identifier, password)) return
         userInterface.nodes.forEach { node ->
             node.attributes.whatIfNotNull { attributes ->
-                when (FormViewType.valueOf(attributes.type.uppercase())) {
-                    FormViewType.HIDDEN -> Unit
-                    FormViewType.TEXT -> attributes.value = identifier
-                    FormViewType.PASSWORD -> attributes.value = password
-                    FormViewType.SUBMIT -> Unit
+                when (valueOf(attributes.type.uppercase())) {
+                    HIDDEN -> Unit
+                    TEXT -> attributes.value = identifier
+                    PASSWORD -> attributes.value = password
+                    SUBMIT -> Unit
                 }
             }
         }
