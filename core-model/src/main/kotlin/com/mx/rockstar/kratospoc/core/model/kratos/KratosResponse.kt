@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mx.rockstar.kratospoc.core.network.model
+package com.mx.rockstar.kratospoc.core.model.kratos
 
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.squareup.moshi.Json

@@ -1,4 +1,4 @@
-package com.mx.rockstar.kratospoc.core.network.model
+package com.mx.rockstar.kratospoc.core.model.kratos
 
 
 data class ErrorResponse(

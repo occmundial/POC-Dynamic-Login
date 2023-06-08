@@ -45,7 +45,7 @@
             android:id="@+id/response"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_margin="16dp"
             app:layout_constraintTop_toBottomOf="@+id/scroll"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
@@ -57,28 +57,6 @@
             android:layout_margin="20dp"
             android:src="@drawable/ic_update"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:contentDescription="@string/update_form" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabFormMultipart"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="20dp"
-            android:enabled="false"
-            android:src="@drawable/ic_plus_1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/fabFormEncoded"
-            android:contentDescription="@string/update_form" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabFormEncoded"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="20dp"
-            android:enabled="false"
-            android:src="@drawable/ic_plus_2"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             android:contentDescription="@string/update_form" />
 

@@ -20,6 +20,7 @@ import androidx.annotation.MainThread
 import androidx.databinding.Bindable
 import com.mx.rockstar.kratospoc.core.data.kratos.Repository
 import com.mx.rockstar.kratospoc.core.model.kratos.Form
+import com.mx.rockstar.kratospoc.core.model.kratos.SessionResponse
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.skydoves.bindables.BindingViewModel
 import com.skydoves.bindables.bindingProperty
@@ -68,59 +69,26 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    private val settingForm: MutableStateFlow<MainAction> = MutableStateFlow(MainAction.StandBy)
-    val formFlow: Flow<String> = settingForm.flatMapLatest { action ->
-        when (action) {
-            is MainAction.Submit -> {
-                Timber.d("settingForm: Submit ${action.userInterface}")
+    private val settingForm: MutableStateFlow<MainSubmit> = MutableStateFlow(MainSubmit.StandBy)
+    val formFlow: Flow<SessionResponse> = settingForm.flatMapLatest { submit ->
+        when (submit) {
+            is MainSubmit.Submit -> {
+                Timber.d("settingForm: Submit ${submit.form}")
                 repository.postForm(
-                    action = getFlowId(action.userInterface.action),
-                    method = action.userInterface.method,
-                    nodes = action.userInterface.nodes,
+                    action = getFlowId(submit.action),
+                    form = submit.form,
                     onStart = { isLoading = true },
                     onComplete = {
                         isLoading = false
-                        settingForm.value = MainAction.StandBy
+                        settingForm.value = MainSubmit.StandBy
                     },
                     onError = { message = it }
                 )
             }
 
-            MainAction.StandBy -> {
+            MainSubmit.StandBy -> {
                 Timber.d("settingForm: StandBy")
                 flow { }
-            }
-
-            is MainAction.SubmitForm -> {
-                Timber.d("settingForm: SubmitForm ${action.form}")
-                repository.postForm(
-                    action = getFlowId(action.form.action),
-                    token = action.form.token,
-                    identifier = action.form.identifier,
-                    password = action.form.password,
-                    onStart = { isLoading = true },
-                    onComplete = {
-                        isLoading = false
-                        settingForm.value = MainAction.StandBy
-                    },
-                    onError = { message = it }
-                )
-            }
-
-            is MainAction.SubmitFormEncoded -> {
-                Timber.d("settingForm: SubmitFormEncoded ${action.form}")
-                repository.postFormEncoded(
-                    action = getFlowId(action.form.action),
-                    token = action.form.token,
-                    identifier = action.form.identifier,
-                    password = action.form.password,
-                    onStart = { isLoading = true },
-                    onComplete = {
-                        isLoading = false
-                        settingForm.value = MainAction.StandBy
-                    },
-                    onError = { message = it }
-                )
             }
         }
     }
@@ -143,26 +111,10 @@ class MainViewModel @Inject constructor(
      * postForm is an action for posting the form.
      */
     @MainThread
-    fun postForm(userInterface: UserInterface) {
+    fun postForm(action: String, form: Form) {
         if (!isLoading) {
             message = null
-            settingForm.value = MainAction.Submit(userInterface)
-        }
-    }
-
-    @MainThread
-    fun postForm(form: Form) {
-        if (!isLoading) {
-            message = null
-            settingForm.value = MainAction.SubmitForm(form)
-        }
-    }
-
-    @MainThread
-    fun postFormEncoded(form: Form) {
-        if (!isLoading) {
-            message = null
-            settingForm.value = MainAction.SubmitFormEncoded(form)
+            settingForm.value = MainSubmit.Submit(action, form)
         }
     }
 
@@ -173,9 +125,7 @@ sealed class MainState {
     object StandBy : MainState()
 }
 
-sealed class MainAction {
-    data class Submit(val userInterface: UserInterface) : MainAction()
-    data class SubmitForm(val form: Form) : MainAction()
-    data class SubmitFormEncoded(val form: Form) : MainAction()
-    object StandBy : MainAction()
+sealed class MainSubmit {
+    data class Submit(val action: String, val form: Form) : MainSubmit()
+    object StandBy : MainSubmit()
 }

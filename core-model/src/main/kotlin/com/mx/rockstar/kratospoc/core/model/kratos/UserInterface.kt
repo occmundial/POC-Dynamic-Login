@@ -10,7 +10,7 @@ data class UserInterface(
     @field:Json(name = "method") val method: String,
     @field:Json(name = "nodes") val nodes: List<Node>
 ) {
-    constructor(): this("", "", emptyList())
+    constructor() : this("", "", emptyList())
 
     override fun toString(): String {
         return Moshi.Builder().build().adapter(UserInterface::class.java).toJson(this)
@@ -61,17 +61,5 @@ data class Label(
 ) {
     override fun toString(): String {
         return Moshi.Builder().build().adapter(Label::class.java).toJson(this)
-    }
-}
-
-@JsonClass(generateAdapter = true)
-data class Form(
-    @field:Json(name = "action") val action: String = "",
-    @field:Json(name = "token") val token: String = "",
-    @field:Json(name = "identifier") val identifier: String = "",
-    @field:Json(name = "password") val password: String = ""
-) {
-    override fun toString(): String {
-        return Moshi.Builder().build().adapter(Form::class.java).toJson(this)
     }
 }

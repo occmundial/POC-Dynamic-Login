@@ -1,7 +1,7 @@
 package com.mx.rockstar.kratospoc.core.data.kratos
 
 import app.cash.turbine.test
-import com.mx.rockstar.kratospoc.core.network.model.KratosResponse
+import com.mx.rockstar.kratospoc.core.model.kratos.KratosResponse
 import com.mx.rockstar.kratospoc.core.network.service.KratosClient
 import com.mx.rockstar.kratospoc.core.network.service.KratosService
 import com.mx.rockstar.kratospoc.core.test.MainCoroutinesRule

@@ -1,7 +1,8 @@
 package com.mx.rockstar.kratospoc.core.data.kratos
 
 import androidx.annotation.WorkerThread
-import com.mx.rockstar.kratospoc.core.model.kratos.Node
+import com.mx.rockstar.kratospoc.core.model.kratos.Form
+import com.mx.rockstar.kratospoc.core.model.kratos.SessionResponse
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import kotlinx.coroutines.flow.Flow
 
@@ -34,33 +35,10 @@ interface Repository {
     @WorkerThread
     fun postForm(
         action: String,
-        method: String,
-        nodes: List<Node>,
+        form: Form,
         onStart: () -> Unit,
         onComplete: () -> Unit,
         onError: (String?) -> Unit
-    ): Flow<String>
-
-    @WorkerThread
-    fun postForm(
-        action: String,
-        token: String,
-        identifier: String,
-        password: String,
-        onStart: () -> Unit,
-        onComplete: () -> Unit,
-        onError: (String?) -> Unit
-    ): Flow<String>
-
-    @WorkerThread
-    fun postFormEncoded(
-        action: String,
-        token: String,
-        identifier: String,
-        password: String,
-        onStart: () -> Unit,
-        onComplete: () -> Unit,
-        onError: (String?) -> Unit
-    ): Flow<String>
+    ): Flow<SessionResponse>
 
 }

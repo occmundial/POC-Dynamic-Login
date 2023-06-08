@@ -16,6 +16,7 @@
 package com.mx.rockstar.kratospoc.ui.main
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
@@ -58,7 +59,7 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
         }
         lifecycleScope.launch {
             viewModel.formFlow.collect {
-                binding.response.text = it
+                binding.response.text = it.toString()
             }
         }
         binding.fab.setOnClickListener {
@@ -86,11 +87,18 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
                     binding.container.addView(view)
                 }
 
-                FormViewType.PASSWORD,
                 FormViewType.TEXT -> {
                     val view = AppCompatEditText(binding.root.context)
                     view.hint = attributes.name
-                    view.setText(attributes.value)
+                    view.setText("nueva@getnada.com")
+                    view.isEnabled = !attributes.disabled
+                    binding.container.addView(view)
+                }
+                FormViewType.PASSWORD -> {
+                    val view = AppCompatEditText(binding.root.context)
+                    view.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
+                    view.hint = attributes.name
+                    view.setText("N[9]YZ-|{nU9d{P|")
                     view.isEnabled = !attributes.disabled
                     binding.container.addView(view)
                 }
@@ -100,16 +108,6 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
                     view.text = attributes.name
                     view.isEnabled = !attributes.disabled
                     view.setOnClickListener { onClickForm(userInterface) }
-
-                    binding.fabFormMultipart.isEnabled = true
-                    binding.fabFormMultipart.setOnClickListener {
-                        onClickFormMultipart(userInterface)
-                    }
-                    binding.fabFormEncoded.isEnabled = true
-                    binding.fabFormEncoded.setOnClickListener {
-                        onClickFormEncoded(userInterface)
-                    }
-
                     binding.container.addView(view)
                 }
             }
@@ -138,33 +136,12 @@ class MainActivity : BindingActivity<LayoutMainBinding>(R.layout.layout_main) {
             }
         }
         Timber.d("userInterface: $userInterface")
-        viewModel.postForm(userInterface)
-    }
-
-    private fun onClickFormMultipart(userInterface: UserInterface) {
-        hideKeyboard()
-        val (identifier: String, password: String) = getFormData()
-        if (validateForm(identifier, password)) return
         val form = Form(
-            action = userInterface.action,
-            token = "",
+            method = "password",
             identifier = identifier,
-            password = password
+            password = password,
         )
-        viewModel.postForm(form)
-    }
-
-    private fun onClickFormEncoded(userInterface: UserInterface) {
-        hideKeyboard()
-        val (identifier: String, password: String) = getFormData()
-        if (validateForm(identifier, password)) return
-        val form = Form(
-            action = userInterface.action,
-            token = "",
-            identifier = identifier,
-            password = password
-        )
-        viewModel.postFormEncoded(form)
+        viewModel.postForm(action = userInterface.action, form = form)
     }
 
     private fun validateForm(identifier: String, password: String): Boolean {
