@@ -33,6 +33,7 @@ class KratosRepository @Inject constructor(
         val response = kratosClient.getLoginForm()
         response.suspendOnSuccess {
             val userInterface = data.ui
+            Timber.d("Request: onSuccess -> $data")
             emit(userInterface)
         }.onFailure {
             onError(message())
@@ -63,9 +64,10 @@ class KratosRepository @Inject constructor(
         Timber.d("postForm -> action: $action form: $form")
         val response = kratosClient.postForm(action, form)
         response.suspendOnSuccess {
+            Timber.d("Request: onSuccess -> $data")
             emit(data)
         }.onFailure {
-            Timber.d("onFailure: ${message()}")
+            Timber.d("Request: onFailure-> ${message()}")
             onError(message())
         }
     }.onStart { onStart() }.onCompletion { onComplete() }.flowOn(ioDispatcher)

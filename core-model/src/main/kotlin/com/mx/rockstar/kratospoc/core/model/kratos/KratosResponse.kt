@@ -18,6 +18,7 @@ package com.mx.rockstar.kratospoc.core.model.kratos
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
+import com.squareup.moshi.Moshi
 
 @JsonClass(generateAdapter = true)
 data class KratosResponse(
@@ -27,4 +28,10 @@ data class KratosResponse(
   @field:Json(name = "request_url") val requestUrl: String,
   @field:Json(name = "refresh") val refresh: Boolean = false,
   @field:Json(name = "ui") val ui: UserInterface,
-)
+) {
+  override fun toString(): String {
+    return Moshi.Builder().build().adapter(KratosResponse::class.java)
+      .indent("  ")
+      .toJson(this)
+  }
+}
