@@ -10,8 +10,6 @@ data class UserInterface(
     @field:Json(name = "method") val method: String,
     @field:Json(name = "nodes") val nodes: List<Node>
 ) {
-    constructor() : this("", "", emptyList())
-
     override fun toString(): String {
         return Moshi.Builder().build().adapter(UserInterface::class.java).toJson(this)
     }

@@ -15,8 +15,9 @@
  */
 package com.mx.rockstar.kratospoc.core.network.service
 
-import com.mx.rockstar.kratospoc.core.model.kratos.Form
+import com.mx.rockstar.kratospoc.core.model.kratos.LoginForm
 import com.mx.rockstar.kratospoc.core.model.kratos.KratosResponse
+import com.mx.rockstar.kratospoc.core.model.kratos.RegistrationForm
 import com.skydoves.sandwich.ApiResponse
 import javax.inject.Inject
 
@@ -28,7 +29,10 @@ class KratosClient @Inject constructor(
 
     suspend fun getRegistrationForm(): ApiResponse<KratosResponse> = client.getRegistrationForm()
 
-    suspend fun postForm(action: String, form: Form) =
-        client.postForm(action, form)
+    suspend fun postLoginForm(action: String, form: LoginForm) =
+        client.postLoginForm(action, form)
+
+    suspend fun postRegistrationForm(action: String, form: RegistrationForm) =
+        client.postRegistrationForm(action, form)
 
 }

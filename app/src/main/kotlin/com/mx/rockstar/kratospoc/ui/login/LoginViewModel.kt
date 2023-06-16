@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.mx.rockstar.kratospoc.ui.main
+package com.mx.rockstar.kratospoc.ui.login
 
 import android.net.Uri
 import androidx.annotation.MainThread
 import androidx.databinding.Bindable
 import com.mx.rockstar.kratospoc.core.data.kratos.Repository
-import com.mx.rockstar.kratospoc.core.model.kratos.Form
+import com.mx.rockstar.kratospoc.core.model.kratos.LoginForm
 import com.mx.rockstar.kratospoc.core.model.kratos.SessionResponse
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.skydoves.bindables.BindingViewModel
@@ -33,10 +33,10 @@ import timber.log.Timber
 import javax.inject.Inject
 
 /**
- * MainViewModel is a bridge between [MainActivity] and [Repository].
+ * MainViewModel is a bridge between [LoginActivity] and [Repository].
  */
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class LoginViewModel @Inject constructor(
     private val repository: Repository
 ) : BindingViewModel() {
 
@@ -48,7 +48,7 @@ class MainViewModel @Inject constructor(
     var message: String? by bindingProperty(null)
 
     private val fetchingForm: MutableStateFlow<MainState> = MutableStateFlow(MainState.StandBy)
-    val listFlow: Flow<UserInterface> = fetchingForm.flatMapLatest { state ->
+    val loginFlow: Flow<UserInterface> = fetchingForm.flatMapLatest { state ->
         when (state) {
             is MainState.Fetch -> {
                 Timber.d("fetchingForm: Fetch ${state.status}")
@@ -74,7 +74,7 @@ class MainViewModel @Inject constructor(
         when (submit) {
             is MainSubmit.Submit -> {
                 Timber.d("settingForm: Submit ${submit.form}")
-                repository.postForm(
+                repository.postLoginForm(
                     action = getFlowId(submit.action),
                     form = submit.form,
                     onStart = { isLoading = true },
@@ -111,7 +111,7 @@ class MainViewModel @Inject constructor(
      * postForm is an action for posting the form.
      */
     @MainThread
-    fun postForm(action: String, form: Form) {
+    fun postForm(action: String, form: LoginForm) {
         if (!isLoading) {
             message = null
             settingForm.value = MainSubmit.Submit(action, form)
@@ -126,7 +126,7 @@ sealed class MainState {
 }
 
 sealed class MainSubmit {
-    data class Submit(val action: String, val form: Form) : MainSubmit()
+    data class Submit(val action: String, val form: LoginForm) : MainSubmit()
     object StandBy : MainSubmit()
 }
 

@@ -1,7 +1,8 @@
 package com.mx.rockstar.kratospoc.core.data.kratos
 
 import androidx.annotation.VisibleForTesting
-import com.mx.rockstar.kratospoc.core.model.kratos.Form
+import com.mx.rockstar.kratospoc.core.model.kratos.LoginForm
+import com.mx.rockstar.kratospoc.core.model.kratos.RegistrationForm
 import com.mx.rockstar.kratospoc.core.model.kratos.SessionResponse
 import com.mx.rockstar.kratospoc.core.model.kratos.UserInterface
 import com.mx.rockstar.kratospoc.core.network.AppDispatcher
@@ -47,22 +48,39 @@ class KratosRepository @Inject constructor(
     ): Flow<UserInterface> = flow {
         val response = kratosClient.getRegistrationForm()
         response.suspendOnSuccess {
-            val userInterface = data.ui
-            emit(userInterface)
+            emit(data.ui)
         }.onFailure {
             onError(message())
         }
     }.onStart { onStart() }.onCompletion { onComplete() }.flowOn(ioDispatcher)
 
-    override fun postForm(
+    override fun postLoginForm(
         action: String,
-        form: Form,
+        form: LoginForm,
         onStart: () -> Unit,
         onComplete: () -> Unit,
         onError: (String?) -> Unit
     ): Flow<SessionResponse> = flow {
         Timber.d("postForm -> action: $action form: $form")
-        val response = kratosClient.postForm(action, form)
+        val response = kratosClient.postLoginForm(action, form)
+        response.suspendOnSuccess {
+            Timber.d("Request: onSuccess -> $data")
+            emit(data)
+        }.onFailure {
+            Timber.d("Request: onFailure-> ${message()}")
+            onError(message())
+        }
+    }.onStart { onStart() }.onCompletion { onComplete() }.flowOn(ioDispatcher)
+
+    override fun postRegistrationForm(
+        action: String,
+        form: RegistrationForm,
+        onStart: () -> Unit,
+        onComplete: () -> Unit,
+        onError: (String?) -> Unit
+    ): Flow<SessionResponse> = flow {
+        Timber.d("postForm -> action: $action form: $form")
+        val response = kratosClient.postRegistrationForm(action, form)
         response.suspendOnSuccess {
             Timber.d("Request: onSuccess -> $data")
             emit(data)

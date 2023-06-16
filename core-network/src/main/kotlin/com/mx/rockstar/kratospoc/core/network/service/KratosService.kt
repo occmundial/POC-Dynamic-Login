@@ -15,8 +15,9 @@
  */
 package com.mx.rockstar.kratospoc.core.network.service
 
-import com.mx.rockstar.kratospoc.core.model.kratos.Form
+import com.mx.rockstar.kratospoc.core.model.kratos.LoginForm
 import com.mx.rockstar.kratospoc.core.model.kratos.KratosResponse
+import com.mx.rockstar.kratospoc.core.model.kratos.RegistrationForm
 import com.mx.rockstar.kratospoc.core.model.kratos.SessionResponse
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.Body
@@ -33,9 +34,15 @@ interface KratosService {
     suspend fun getRegistrationForm(): ApiResponse<KratosResponse>
 
     @POST("kratos/self-service/login")
-    suspend fun postForm(
+    suspend fun postLoginForm(
         @Query("flow") action: String,
-        @Body form: Form
+        @Body form: LoginForm
+    ): ApiResponse<SessionResponse>
+
+    @POST("kratos/self-service/registration")
+    suspend fun postRegistrationForm(
+        @Query("flow") action: String,
+        @Body form: RegistrationForm
     ): ApiResponse<SessionResponse>
 
 }

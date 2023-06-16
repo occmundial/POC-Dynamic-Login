@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">POC Kratos</string>
     <string name="update_form">update form</string>
+    <string name="label_title">Login con kratos</string>
+    <string name="label_login">Login</string>
+    <string name="label_registration">Registration</string>
 </resources>
