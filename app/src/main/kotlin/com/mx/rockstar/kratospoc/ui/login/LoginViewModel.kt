@@ -47,22 +47,22 @@ class LoginViewModel @Inject constructor(
     @get:Bindable
     var message: String? by bindingProperty(null)
 
-    private val fetchingForm: MutableStateFlow<MainState> = MutableStateFlow(MainState.StandBy)
+    private val fetchingForm: MutableStateFlow<FormState> = MutableStateFlow(FormState.StandBy)
     val loginFlow: Flow<UserInterface> = fetchingForm.flatMapLatest { state ->
         when (state) {
-            is MainState.Fetch -> {
+            is FormState.Fetch -> {
                 Timber.d("fetchingForm: Fetch ${state.status}")
                 repository.fetchLoginForm(
                     onStart = { isLoading = true },
                     onComplete = {
                         isLoading = false
-                        fetchingForm.value = MainState.StandBy
+                        fetchingForm.value = FormState.StandBy
                     },
                     onError = { message = it }
                 )
             }
 
-            MainState.StandBy -> {
+            FormState.StandBy -> {
                 Timber.d("fetchingForm: StandBy")
                 flow { }
             }
@@ -103,7 +103,7 @@ class LoginViewModel @Inject constructor(
     @MainThread
     fun fetchLoginForm(status: String) {
         if (!isLoading) {
-            fetchingForm.value = MainState.Fetch(status)
+            fetchingForm.value = FormState.Fetch(status)
         }
     }
 
@@ -120,9 +120,9 @@ class LoginViewModel @Inject constructor(
 
 }
 
-sealed class MainState {
-    data class Fetch(val status: String) : MainState()
-    object StandBy : MainState()
+sealed class FormState {
+    data class Fetch(val status: String) : FormState()
+    object StandBy : FormState()
 }
 
 sealed class MainSubmit {

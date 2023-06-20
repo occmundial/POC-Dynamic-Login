@@ -22,6 +22,7 @@ import com.mx.rockstar.kratospoc.core.model.kratos.SessionResponse
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -39,10 +40,11 @@ interface KratosService {
         @Body form: LoginForm
     ): ApiResponse<SessionResponse>
 
+    @Headers("Content-Type: application/json")
     @POST("kratos/self-service/registration")
     suspend fun postRegistrationForm(
         @Query("flow") action: String,
-        @Body form: RegistrationForm
+        @Body form: String
     ): ApiResponse<SessionResponse>
 
 }

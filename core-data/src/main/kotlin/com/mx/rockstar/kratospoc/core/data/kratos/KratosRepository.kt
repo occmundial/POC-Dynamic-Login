@@ -32,6 +32,7 @@ class KratosRepository @Inject constructor(
         onError: (String?) -> Unit
     ): Flow<UserInterface> = flow {
         val response = kratosClient.getLoginForm()
+        Timber.d("Request: onSuccess -> $response")
         response.suspendOnSuccess {
             val userInterface = data.ui
             Timber.d("Request: onSuccess -> $data")
@@ -47,6 +48,7 @@ class KratosRepository @Inject constructor(
         onError: (String?) -> Unit
     ): Flow<UserInterface> = flow {
         val response = kratosClient.getRegistrationForm()
+        Timber.d("Request: onSuccess -> $response")
         response.suspendOnSuccess {
             emit(data.ui)
         }.onFailure {
@@ -74,7 +76,7 @@ class KratosRepository @Inject constructor(
 
     override fun postRegistrationForm(
         action: String,
-        form: RegistrationForm,
+        form: String,
         onStart: () -> Unit,
         onComplete: () -> Unit,
         onError: (String?) -> Unit

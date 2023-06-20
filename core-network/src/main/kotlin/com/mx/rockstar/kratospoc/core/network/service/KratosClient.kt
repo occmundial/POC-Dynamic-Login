@@ -32,7 +32,7 @@ class KratosClient @Inject constructor(
     suspend fun postLoginForm(action: String, form: LoginForm) =
         client.postLoginForm(action, form)
 
-    suspend fun postRegistrationForm(action: String, form: RegistrationForm) =
+    suspend fun postRegistrationForm(action: String, form: String) =
         client.postRegistrationForm(action, form)
 
 }

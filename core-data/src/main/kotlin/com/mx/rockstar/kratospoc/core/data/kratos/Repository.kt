@@ -45,7 +45,7 @@ interface Repository {
     @WorkerThread
     fun postRegistrationForm(
         action: String,
-        form: RegistrationForm,
+        form: String,
         onStart: () -> Unit,
         onComplete: () -> Unit,
         onError: (String?) -> Unit
